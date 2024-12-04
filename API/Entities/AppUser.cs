@@ -12,6 +12,9 @@ namespace API.Entities
         public required string UserName { get; set; }
         //String in.Net is concidered as reference type and int is concidered as primitive type
         //Default value of primitive type is 0 while as for reference type is null when nullable is accetable
+
+        public required byte[] PasswordHash { get; set; }
+        public required byte[] PasswordSalt { get; set; }
         
     }
 }
