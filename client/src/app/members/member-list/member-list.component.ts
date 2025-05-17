@@ -11,19 +11,20 @@ import { MemberCardComponent } from "../member-card/member-card.component";
   styleUrl: './member-list.component.scss'
 })
 export class MemberListComponent implements OnInit {
-  private memberService = inject(MembersService);
-  members: Member[] = [];
+  memberService = inject(MembersService);
+  // members: Member[] = [];
 
 
   ngOnInit(): void {
-    this.loadMembers();
+    if(this.memberService.members().length === 0) this.loadMembers();
   }
 
   loadMembers() {
-    this.memberService.getMembers().subscribe({
-      next: members => this.members = members,
-      error: error => console.log(error)
-    })
+    this.memberService.getMembers();
+    // .subscribe({
+    //   next: members => this.members = members,
+    //   error: error => console.log(error)
+    // })
   }
 
 }
