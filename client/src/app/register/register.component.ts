@@ -57,12 +57,12 @@ export class RegisterComponent implements OnInit {
     const dob = this.getDateOnly(this.registerForm.get('dateofbirth')?.value);
     this.registerForm.patchValue({dateofbirth: dob});
     this.accountService.register(this.registerForm.value).subscribe({
-      next: _ => 
+      next: _ =>
         this.router.navigateByUrl('/members'),
         // Instead of clearing the input fields and console the response we will login and redirect the user
         // console.log(response);
         // this.cancel();
-      
+
       error: error => this.validationErrors = error
     });
   }
@@ -73,7 +73,7 @@ export class RegisterComponent implements OnInit {
 
   private getDateOnly(dob: string | undefined) {
     if(!dob) return;
-    return new Date(dob).toISOString().slice(0,10);
+    return new Date(dob).toISOString().slice(0,5);
   }
 
 }
