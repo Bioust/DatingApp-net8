@@ -7,6 +7,7 @@ import { Photo } from '../_models/photo';
 import { PaginationResult } from '../_models/pagination';
 import { UserParams } from '../_models/userparams';
 import { AccountService } from './account.service';
+import { setPaginationHeaders } from './paginationHelper';
 // import { AccountService } from './account.service';
 
 @Injectable({
@@ -18,9 +19,9 @@ export class MembersService {
   private accountService = inject(AccountService);
   baseUrl= environment.apiUrl;
   // members = signal<Member []>([]);  //Instead of getting members everytime we will store members in this variable once we get them
-  paginatedResults = signal<PaginationResult<Member> | null>(null);
+  paginatedResults = signal<PaginationResult<Member[]> | null>(null);
   // memberCache = new Map(); //Map helps us to get and set values
-  memberCache = new Map<string, PaginationResult<Member>>();
+  memberCache = new Map<string, PaginationResult<Member[]>>();
   user = this.accountService.currentUser();
   userParams = signal<UserParams | null>(new UserParams(this.user));
   constructor() { }
@@ -62,7 +63,7 @@ export class MembersService {
     return;
   }
 
-  let params = this.setPaginationHeaders(userParams.pageNumber, userParams.pageSize);
+  let params = setPaginationHeaders(userParams.pageNumber, userParams.pageSize);
   params = params.append('minAge', userParams.minAge);
   params = params.append('maxAge', userParams.maxAge);
   params = params.append('gender', userParams.gender);
@@ -73,7 +74,7 @@ export class MembersService {
       next: response => {
         const pagination = response.headers.get('pagination');
         if (pagination) {
-          const paginatedResult: PaginationResult<Member> = {
+          const paginatedResult: PaginationResult<Member[]> = {
             items: response.body ?? [],
             pagination: JSON.parse(pagination)
           };
@@ -84,23 +85,6 @@ export class MembersService {
     });
 }
 
-  private setPaginatedResponse(response: HttpResponse<Member[]>) {
-    this.paginatedResults.set({
-        items: response.body as Member[],
-        pagination: JSON.parse(response.headers.get('pagination')!)
-        });
-  }
-
-  private setPaginationHeaders(pageNumber: number, pageSize: number) {
-    let params = new HttpParams();
-
-    if(pageNumber && pageSize) {
-      params = params.append('pageNumber', pageNumber);
-      params = params.append('pageSize', pageSize);
-    }
-
-    return params;
-  }
 
   // getMember(username: string) {
   //   // return this.http.get<Member>(this.baseUrl + 'users/' + username, this.getHttpOptions());
