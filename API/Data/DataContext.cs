@@ -11,6 +11,7 @@ namespace API.Data
     {
         public required DbSet<AppUser> Users { get; set; }  //Table name Users
         public required DbSet<UserLike> Likes { get; set; } //Table name Likes
+        public required DbSet<Message> Messages { get; set; } //Table name Messages
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +28,14 @@ namespace API.Data
                 .WithMany(l => l.LikedByUsers)
                 .HasForeignKey(s => s.TargetUserId)
                 .OnDelete(DeleteBehavior.Cascade);  //NoAction instead of Cascade for squalite
+            modelBuilder.Entity<Message>()
+                .HasOne(x => x.Recipient)
+                .WithMany(x => x.MessagesRecieved)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Message>()
+                .HasOne(x => x.Sender)
+                .WithMany(x => x.MessagesSent)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
